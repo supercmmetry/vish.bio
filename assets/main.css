@@ -1,0 +1,12 @@
+html {
+    @apply font-mono;
+}
+
+h1 {
+    @apply text-white;
+    @apply select-none;
+}
+
+body {
+    @apply bg-slate-950;
+}

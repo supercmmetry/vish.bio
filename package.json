@@ -1,0 +1,40 @@
+{
+  "name": "vish-bio",
+  "version": "1.0.0",
+  "description": "A minimal portfolio website",
+  "repository": "https://github.com/supercmmetry/vish.bio",
+  "author": "Vishaal Selvaraj <vishaals2000@gmail.com>",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "@fullhuman/postcss-purgecss": "^6.0.0",
+    "@tailwindcss/typography": "^0.5.13",
+    "autoprefixer": "^10.4.19",
+    "cssnano": "^7.0.4",
+    "npm-watch": "^0.13.0",
+    "postcss": "^8.4.39",
+    "postcss-cli": "^11.0.0",
+    "rimraf": "^5.0.8",
+    "tailwindcss": "^3.4.4"
+  },
+  "watch": {
+    "dev": {
+      "patterns": ["src", "templates", "assets"],
+      "extensions": "html,css,rs",
+      "quiet": true,
+      "legacyWatch": true,
+      "delay": 1000,
+      "runOnChangeOnly": false
+    }
+  },
+  "scripts": {
+    "clean": "rimraf asseta/tailwind.generated.css",
+    "build:tailwind": "postcss assets/tailwind.css -o assets/tailwind.generated.css",
+    "build:custom-css": "postcss assets/main.css -o assets/main.generated.css",
+    "build": "NODE_ENV=production yarn build:tailwind && yarn build:custom-css",
+    "release": "NODE_ENV=production yarn build && cargo build --release",
+    "dev": "yarn build && cargo run",
+    "start": "yarn release && cargo run --release",
+    "watch": "npm-watch"
+  }
+}

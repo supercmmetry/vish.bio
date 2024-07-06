@@ -1,0 +1,23 @@
+[package]
+name = "vish-bio"
+version = "0.1.0"
+edition = "2021"
+authors = ["Vishaal Selvaraj <vishaals2000@gmail.com>"]
+description = "A minimal portfolio website"
+repository = "https://github.com/supercmmetry/vish.bio"
+homepage = "https://vish.bio"
+license = "MIT"
+keywords = ["minimal", "portfolio", "website", "rust", "axum", "askama"]
+readme = "README.md"
+
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+axum = { version = "0.7.5", features = ["macros"] }
+askama = { version = "0.12.1", features = ["with-axum"] }
+askama_axum = "0.4.0"
+tokio = { version = "1.38.0", features = ["full"] }
+markdown = "=1.0.0-alpha.18"
+rust-embed = "8.4.0"
+mime_guess = "2.0.5"
