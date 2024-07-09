@@ -48,14 +48,14 @@ async fn assets(Path(asset_name): Path<String>) -> axum::response::Result<impl I
     )
 }
 
-async fn askama_sample() -> impl IntoResponse {
-    IndexTemplate::new("Vishaal")
+async fn index() -> impl IntoResponse {
+    IndexTemplate
 }
 
 #[tokio::main]
 async fn main() {
     let app = Router::new()
-        .route("/", get(askama_sample))
+        .route("/", get(index))
         .route("/assets/:asset_name", get(assets));
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();

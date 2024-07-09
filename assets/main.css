@@ -2,11 +2,15 @@ html {
     @apply font-mono;
 }
 
-h1 {
-    @apply text-white;
+h1, span {
+    @apply text-foreground;
     @apply select-none;
 }
 
 body {
-    @apply bg-slate-950;
+    @apply bg-primary;
+}
+
+ul {
+    list-style-type: '- ';
 }
