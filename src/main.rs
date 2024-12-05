@@ -13,7 +13,7 @@ use axum::{
     routing::get,
     Router,
 };
-
+use axum::response::Redirect;
 use mime_guess::MimeGuess;
 use pages::index::IndexTemplate;
 
@@ -52,11 +52,16 @@ async fn index() -> impl IntoResponse {
     IndexTemplate
 }
 
+async fn jira() -> impl IntoResponse {
+    Redirect::permanent("https://vishaalselvaraj.atlassian.net")
+}
+
 #[tokio::main]
 async fn main() {
     let app = Router::new()
         .route("/", get(index))
-        .route("/assets/:asset_name", get(assets));
+        .route("/assets/:asset_name", get(assets))
+        .route("/jira", get(jira));
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
 
