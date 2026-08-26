@@ -1,55 +1,12 @@
+pub mod assets;
+pub mod content;
 pub mod pages;
 
-#[macro_use]
-extern crate rust_embed;
-
-use std::{ffi::OsStr, path::PathBuf};
-
-use axum::{
-    body::Body,
-    extract::Path,
-    http::{header, Response, StatusCode},
-    response::{ErrorResponse, IntoResponse},
-    routing::get,
-    Router,
-};
-use axum::response::Redirect;
-use mime_guess::MimeGuess;
+use axum::{response::IntoResponse, response::Redirect, routing::get, Router};
 use pages::index::IndexTemplate;
 
-#[derive(RustEmbed)]
-#[folder = "assets/"]
-struct Assets;
-
-async fn assets(Path(asset_name): Path<String>) -> axum::response::Result<impl IntoResponse> {
-    Assets::get(&asset_name).map_or_else(
-        || Err(ErrorResponse::from(StatusCode::NOT_FOUND)),
-        |d| {
-            let path = PathBuf::from(&asset_name);
-
-            let ext = path
-                .as_path()
-                .extension()
-                .and_then(OsStr::to_str)
-                .ok_or_else(|| ErrorResponse::from(StatusCode::BAD_REQUEST))?;
-
-            let content_type = MimeGuess::from_ext(ext)
-                .first()
-                .ok_or_else(|| ErrorResponse::from(StatusCode::BAD_REQUEST))?;
-
-            let response = Response::builder()
-                .status(StatusCode::OK)
-                .header(header::CONTENT_TYPE, content_type.to_string())
-                .body(Body::from(d.data))
-                .map_err(|_| ErrorResponse::from(StatusCode::INTERNAL_SERVER_ERROR))?;
-
-            Ok(response)
-        },
-    )
-}
-
 async fn index() -> impl IntoResponse {
-    IndexTemplate
+    IndexTemplate::new()
 }
 
 async fn jira() -> impl IntoResponse {
@@ -60,10 +17,21 @@ async fn jira() -> impl IntoResponse {
 async fn main() {
     let app = Router::new()
         .route("/", get(index))
-        .route("/assets/:asset_name", get(assets))
+        // Catch-all, not `:asset_name` — a single-segment param cannot match
+        // `/assets/fonts/…` or `/assets/js/…`.
+        .route("/assets/*asset_path", get(assets::serve))
         .route("/jira", get(jira));
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    let port = std::env::var("PORT")
+        .ok()
+        .and_then(|p| p.parse::<u16>().ok())
+        .unwrap_or(3000);
+
+    let listener = tokio::net::TcpListener::bind(("0.0.0.0", port))
+        .await
+        .unwrap_or_else(|e| panic!("failed to bind 0.0.0.0:{port}: {e}"));
+
+    println!("listening on http://0.0.0.0:{port}");
 
     axum::serve(listener, app).await.unwrap();
 }

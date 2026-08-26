@@ -1,0 +1,25 @@
+<section id="elsewhere" class="shell section" data-reveal-group>
+    <div class="section__head" data-reveal>
+        <span class="section__index">04</span>
+        <h2 class="section__label">Elsewhere</h2>
+        <span class="section__rule" data-reveal="rule" aria-hidden="true"></span>
+    </div>
+
+    <p class="contact__line" data-reveal>Open to interesting conversations.</p>
+
+    <p class="contact__note" data-reveal>
+        Especially about query engines, schedulers, compression, or anything where the
+        interesting part lives below the API.
+    </p>
+
+    <dl class="links" data-reveal>
+        {% for link in links.iter() %}
+        <div class="links__row">
+            <dt class="links__label">{{ link.label }}</dt>
+            <dd>
+                <a class="link" href="{{ link.href }}"{% if link.href.starts_with("http") %} target="_blank" rel="noopener"{% endif %}>{{ link.handle }}</a>
+            </dd>
+        </div>
+        {% endfor %}
+    </dl>
+</section>

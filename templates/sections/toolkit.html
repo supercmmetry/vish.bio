@@ -1,0 +1,18 @@
+<section id="toolkit" class="shell section" data-reveal-group>
+    <div class="section__head" data-reveal>
+        <span class="section__index">03</span>
+        <h2 class="section__label">Toolkit</h2>
+        <span class="section__rule" data-reveal="rule" aria-hidden="true"></span>
+    </div>
+
+    <p class="section__lede" data-reveal>The list, since people ask.</p>
+
+    {% for group in skills.iter() %}
+    <div class="toolkit__group" data-reveal>
+        <span class="entry__company">{{ group.label }}</span>
+        <ul class="toolkit__items">
+            {% for item in group.items.iter() %}<li>{{ item }}</li>{% endfor %}
+        </ul>
+    </div>
+    {% endfor %}
+</section>

@@ -1,0 +1,28 @@
+<section id="open-source" class="shell section" data-reveal-group>
+    <div class="section__head" data-reveal>
+        <span class="section__index">02</span>
+        <h2 class="section__label">Open source</h2>
+        <span class="section__rule" data-reveal="rule" aria-hidden="true"></span>
+    </div>
+
+    <p class="section__lede" data-reveal>Things I build when nobody's asking.</p>
+
+    {% for project in projects.iter() %}
+    <article class="entry" data-reveal>
+        <div class="entry__meta">
+            <ul class="chips chips--flush">
+                {% for tag in project.tags.iter() %}<li class="chip">{{ tag }}</li>{% endfor %}
+            </ul>
+        </div>
+
+        <div class="entry__body">
+            <h3>
+                <a class="project__name" href="{{ project.url }}" target="_blank" rel="noopener">
+                    {{ project.name }}<span class="project__arrow" aria-hidden="true">↗</span>
+                </a>
+            </h3>
+            <p class="project__blurb">{{ project.blurb }}</p>
+        </div>
+    </article>
+    {% endfor %}
+</section>

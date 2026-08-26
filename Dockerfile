@@ -1,6 +1,10 @@
 FROM rustlang/rust:nightly AS builder
 
-RUN rustup target add x86_64-unknown-linux-musl --toolchain=nightly
+# No --toolchain flag: the base image pins a dated toolchain (e.g.
+# nightly-2026-08-12-x86_64-unknown-linux-gnu), so naming "nightly" here would install a
+# *second* toolchain and add the target to that one, leaving the active toolchain without
+# musl — cargo then fails with E0463 "can't find crate for `core`".
+RUN rustup target add x86_64-unknown-linux-musl
 
 WORKDIR /app
 

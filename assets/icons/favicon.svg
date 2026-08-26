@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="vish.bio">
+  <rect width="32" height="32" rx="6" fill="#faf8f4"/>
+  <rect x="7" y="9" width="18" height="2.6" rx="1.3" fill="#16130f"/>
+  <rect x="7" y="14.7" width="18" height="2.6" rx="1.3" fill="#16130f" opacity=".4"/>
+  <rect x="7" y="20.4" width="18" height="2.6" rx="1.3" fill="#a34518"/>
+</svg>
