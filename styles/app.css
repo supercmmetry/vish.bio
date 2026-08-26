@@ -878,6 +878,13 @@
   .coder--waving .coder__head { transform: rotate(6deg); }
   .coder--waving .coder__face { opacity: 1; }
   .coder--waving .coder__wave { opacity: 1; animation: coder-wave 1.6s ease-in-out infinite; }
+
+  /*
+   * The raised arm shares the near arm's shoulder — it *is* that arm, lifted. Without
+   * hiding the original the figure ends up with three hands. The far arm stays down and
+   * becomes the one still resting on the keyboard.
+   */
+  .coder--waving .coder__arm--near { opacity: 0; }
   .coder--waving .coder__arm--far { transform: rotate(-6deg) translate(-4px, 3px); }
 
   @keyframes coder-wave {
