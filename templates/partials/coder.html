@@ -67,12 +67,31 @@
 
             <rect class="coder__stroke" x="112" y="188" width="76" height="8" rx="2" />
 
-            {#- Mug, with steam that drifts by pulling a dash pattern along the path. -#}
+            {#-
+              Mug. The coffee is a tall rectangle clipped to the mug's inner shape and
+              translated downward as the reader scrolls — geometry stays put, only a
+              transform moves, and the clip does the rest. Drawn first so the outline
+              strokes sit over it.
+            -#}
             <g class="coder__mug">
+                <defs>
+                    <clipPath id="coder-mug-fill">
+                        <path d="M237.5 177.5 h23 v14 a5 5 0 0 1 -5 5 h-13 a5 5 0 0 1 -5 -5 z" />
+                    </clipPath>
+                </defs>
+
+                <g clip-path="url(#coder-mug-fill)">
+                    <rect class="coder__coffee" x="236" y="180" width="27" height="22" />
+                </g>
+
                 <path class="coder__stroke" d="M236 176 h26 v16 a6 6 0 0 1 -6 6 h-14 a6 6 0 0 1 -6 -6 z" />
                 <path class="coder__stroke" d="M262 181 q9 0 9 5.5 t-9 5.5" />
-                <path class="coder__stroke coder__steam" d="M243 170 q6 -8 0 -15 q-6 -7 0 -14" />
-                <path class="coder__stroke coder__steam coder__steam--b" d="M254 170 q6 -8 0 -15 q-6 -7 0 -14" />
+
+                {#- Steam fades out with the coffee: an empty cup has stopped steaming. -#}
+                <g class="coder__steam-group">
+                    <path class="coder__stroke coder__steam" d="M243 170 q6 -8 0 -15 q-6 -7 0 -14" />
+                    <path class="coder__stroke coder__steam coder__steam--b" d="M254 170 q6 -8 0 -15 q-6 -7 0 -14" />
+                </g>
             </g>
         </svg>
 

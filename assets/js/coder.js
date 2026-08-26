@@ -154,6 +154,18 @@
 
     ticking = false;
 
+    /*
+     * Coffee drains across the whole read rather than per section — it is the one part
+     * of the scene that tracks the journey instead of the current stop. Written as a
+     * 0..1 ratio; styles/app.css turns it into a level and fades the steam with it.
+     */
+    var travel = document.documentElement.scrollHeight - window.innerHeight;
+    var drained = travel > 0 ? window.scrollY / travel : 0;
+    figure.style.setProperty(
+      "--coffee-drain",
+      (drained < 0 ? 0 : drained > 1 ? 1 : drained).toFixed(3)
+    );
+
     var mid = window.innerHeight / 2;
     var best = null;
     var bestDistance = Infinity;

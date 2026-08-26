@@ -96,6 +96,7 @@
     --c-line: 228 222 212;
     --c-accent: 28 61 90;
     --c-ember: 163 69 24;
+    --c-coffee: 92 56 28;
 
     --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
     --gutter: clamp(1.25rem, 6vw, 4rem);
@@ -899,6 +900,24 @@
   .coder.is-idle *,
   .coder.is-idle *::after {
     animation-play-state: paused;
+  }
+
+  /*
+   * Coffee level. `--coffee-drain` runs 0 (full) to 1 (empty) and is written by coder.js
+   * from scroll progress; the mug's inner height is 17 units, so that is the full travel.
+   * Unset — no JavaScript — resolves to 0 and the cup is simply full.
+   */
+  .coder__coffee {
+    fill: rgb(var(--c-coffee));
+    transform: translateY(calc(var(--coffee-drain, 0) * 17px));
+  }
+
+  /*
+   * No transition, deliberately: this tracks the scrollbar rather than reacting to it,
+   * and easing would make the surface lag behind the reader's thumb.
+   */
+  .coder__steam-group {
+    opacity: calc(1 - var(--coffee-drain, 0));
   }
 
   /* Steam drifts by pulling the dash pattern along the path. */
