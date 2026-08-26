@@ -1,0 +1,97 @@
+{#-
+  The coder scene: a sticky companion to the reading column.
+
+  Drawn as hairline strokes with no fills, so it reads as a plate in a paper rather than
+  an illustration pasted onto one — the same register as Computer Modern itself. Every
+  animated part is its own <g> with a transform-origin, because poses interpolate via CSS
+  transforms; nothing here animates geometry attributes.
+
+  The screen's text is NOT SVG <text>. It is an HTML <pre> layered over the monitor rect,
+  so it sets in real CMU Typewriter and the typing effect works on a plain text node.
+  Coordinates are load-bearing: .coder__screen positions itself as percentages of this
+  viewBox, so moving the monitor rect means updating those percentages too.
+-#}
+<figure class="coder coder--{{ scene.pose }}" data-coder data-current="{{ scene.id }}" aria-hidden="true">
+    <div class="coder__frame">
+        <svg class="coder__art" viewBox="0 0 320 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {#- Desk: one rule, the way a TeX figure would draw it. -#}
+            <line class="coder__desk" x1="8" y1="198" x2="312" y2="198" />
+
+            {#- Monitor. The <pre> overlay is positioned to this rect by .coder__screen. -#}
+            <g class="coder__monitor">
+                <rect class="coder__stroke" x="140" y="22" width="158" height="118" rx="3" />
+                <path class="coder__stroke" d="M219 140 V198" />
+            </g>
+
+            {#- Chair back, behind the figure. -#}
+            <path class="coder__stroke" d="M22 198 V150 Q22 136 36 136 L46 136" />
+
+            <g class="coder__figure">
+                <g class="coder__head">
+                    <circle class="coder__stroke" cx="78" cy="98" r="16" />
+                    {#- Turns toward the reader in the `waving` pose only. -#}
+                    <path class="coder__stroke coder__face" d="M91 93 q4 6 0 12" />
+                </g>
+
+                <path class="coder__stroke" d="M74 113 L75 127" />
+
+                {#- Back rising to an explicit shoulder line, then the chest dropping away. -#}
+                <g class="coder__torso">
+                    <path class="coder__stroke" d="M44 198 C42 160 46 134 62 128 L94 132" />
+                    <path class="coder__stroke" d="M94 132 C102 152 100 176 98 198" />
+                </g>
+
+                <g class="coder__arm coder__arm--far">
+                    <path class="coder__stroke" d="M88 131 L108 149 L136 174" />
+                    <circle class="coder__stroke" cx="141" cy="177" r="4.5" />
+                </g>
+
+                <g class="coder__arm coder__arm--near">
+                    <path class="coder__stroke" d="M92 136 L110 162 L140 184" />
+                    <circle class="coder__stroke" cx="145" cy="186" r="4.5" />
+                </g>
+
+                {#- Raised only in the `waving` pose; folded away otherwise. -#}
+                <g class="coder__wave">
+                    <path class="coder__stroke" d="M92 133 L106 104 L112 80" />
+                    <circle class="coder__stroke" cx="113" cy="74" r="5.5" />
+                </g>
+            </g>
+
+            {#- Thought marks, shown only in the `thinking` pose. -#}
+            <g class="coder__think">
+                <circle class="coder__stroke" cx="104" cy="70" r="2.5" />
+                <circle class="coder__stroke" cx="116" cy="56" r="4" />
+                <circle class="coder__stroke" cx="132" cy="38" r="6" />
+            </g>
+
+            <rect class="coder__stroke" x="112" y="188" width="76" height="8" rx="2" />
+
+            {#- Mug, with steam that drifts by pulling a dash pattern along the path. -#}
+            <g class="coder__mug">
+                <path class="coder__stroke" d="M236 176 h26 v16 a6 6 0 0 1 -6 6 h-14 a6 6 0 0 1 -6 -6 z" />
+                <path class="coder__stroke" d="M262 181 q9 0 9 5.5 t-9 5.5" />
+                <path class="coder__stroke coder__steam" d="M243 170 q6 -8 0 -15 q-6 -7 0 -14" />
+                <path class="coder__stroke coder__steam coder__steam--b" d="M254 170 q6 -8 0 -15 q-6 -7 0 -14" />
+            </g>
+        </svg>
+
+        {#-
+          Baked in server-side, so the panel is a finished illustration with no JS at all.
+          coder.js retypes it from the <template> list below as sections scroll past.
+        -#}
+        <div class="coder__screen">
+            <span class="coder__caption" data-coder-caption>{{ scene.caption }}</span>
+            <pre class="coder__code" data-coder-code>{% for line in scene.lines.iter() %}{{ line }}{% if !loop.last %}
+{% endif %}{% endfor %}</pre>
+        </div>
+    </div>
+
+    <figcaption class="coder__legend" data-coder-legend>{{ scene.caption }}</figcaption>
+</figure>
+
+{#- Scene library. Read by coder.js; inert markup otherwise. -#}
+{% for s in scenes.iter() %}
+<template data-scene="{{ s.id }}" data-pose="{{ s.pose }}" data-caption="{{ s.caption }}">{% for line in s.lines.iter() %}{{ line }}{% if !loop.last %}
+{% endif %}{% endfor %}</template>
+{% endfor %}

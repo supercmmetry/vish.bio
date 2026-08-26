@@ -58,6 +58,24 @@ pub struct Link {
     pub handle: &'static str,
 }
 
+/// One state of the coder illustration in the sticky companion column.
+///
+/// Lives here rather than in the markup for the same reason every other repeated
+/// collection does: it is content. The template renders each scene into a `<template>`
+/// element and `assets/js/coder.js` swaps between them as sections scroll past.
+pub struct Scene {
+    /// Matches the `data-scene` on the section that activates it; `"intro"` is the
+    /// default baked into the page for the no-JS and above-the-fold case.
+    pub id: &'static str,
+    /// Drives the figure's posture — see the `.coder--*` rules in styles/app.css.
+    pub pose: &'static str,
+    /// Window chrome caption, in the manner of a title bar.
+    pub caption: &'static str,
+    /// Typed out one character at a time. Kept short: the panel is ~22 columns wide at
+    /// its narrowest, and anything longer wraps into a mess.
+    pub lines: &'static [&'static str],
+}
+
 // ---------------------------------------------------------------------------------------
 // Tenure — derived, never hardcoded
 // ---------------------------------------------------------------------------------------
@@ -308,3 +326,85 @@ pub static LINKS: &[Link] = &[
         handle: "PDF",
     },
 ];
+
+// ---------------------------------------------------------------------------------------
+// Scenes
+// ---------------------------------------------------------------------------------------
+
+/// The first entry is the default: rendered into the page by Askama so the scene is a
+/// complete illustration before any script runs, and the one shown while the hero is in
+/// view. The rest are keyed to `data-scene` on each section.
+pub static SCENES: &[Scene] = &[
+    Scene {
+        id: "intro",
+        pose: "typing",
+        caption: "~/vish.bio",
+        lines: &[
+            "fn main() {",
+            "  let me = Engineer",
+            "        ::new()",
+            "        .below(api);",
+            "    me.build();",
+            "}",
+        ],
+    },
+    Scene {
+        id: "work",
+        pose: "typing",
+        caption: "plan.scala",
+        lines: &[
+            "// rewrite the plan",
+            "case Filter(p, scan)",
+            "  if pushable(p) =>",
+            "  scan.copy(",
+            "    pushed = p +: ps",
+            "  )",
+        ],
+    },
+    Scene {
+        id: "open-source",
+        pose: "reviewing",
+        caption: "hybridzip",
+        lines: &[
+            "$ git log --graph",
+            "* 4f2a1c  entropy:",
+            "|         adaptive",
+            "|         ctx mixing",
+            "* 91be07  bitio:",
+            "|         2x reads",
+        ],
+    },
+    Scene {
+        id: "toolkit",
+        pose: "thinking",
+        caption: "Cargo.toml",
+        lines: &[
+            "[dependencies]",
+            "rust    = \"stable\"",
+            "cpp     = \"20\"",
+            "scala   = \"2.13\"",
+            "go      = \"1.22\"",
+            "sleep   = \"0.0.1\"",
+        ],
+    },
+    Scene {
+        id: "elsewhere",
+        pose: "waving",
+        caption: "compose",
+        lines: &[
+            "$ mail vishaal",
+            "Subject: hello",
+            "",
+            "Saw your site. Got",
+            "a hard problem for",
+            "you.",
+        ],
+    },
+];
+
+impl Scene {
+    /// The scene rendered server-side, so the panel is never empty before JS boots.
+    pub fn default_scene() -> &'static Scene {
+        &SCENES[0]
+    }
+}

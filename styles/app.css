@@ -605,11 +605,23 @@
 
   .links__row {
     display: grid;
-    grid-template-columns: minmax(0, 10.5rem) minmax(0, 1fr);
-    gap: 1rem 2rem;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.3rem;
     align-items: baseline;
     padding-block: 1rem;
     border-bottom: 1px solid rgb(var(--c-line));
+  }
+
+  @media (min-width: 34rem) {
+    .links__row {
+      grid-template-columns: minmax(0, 10.5rem) minmax(0, 1fr);
+      gap: 1rem 2rem;
+    }
+  }
+
+  /* An email address offers no break opportunity the browser will take on its own. */
+  .links__row .link {
+    overflow-wrap: anywhere;
   }
 
   .links__label {
@@ -633,6 +645,271 @@
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: rgb(var(--c-ink-faint));
+  }
+
+  /* ----------------------------------------------------------------------- stage ----- */
+
+  /*
+   * Two columns below 64rem's worth of width: the reading flow, and a companion that
+   * sticks while it scrolls past. The hero spans both so its display type keeps the full
+   * measure — narrowing it to make room for the scene would cost more than the scene adds.
+   */
+
+  .stage {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hero {
+    grid-column: 1 / -1;
+  }
+
+  @media (min-width: 64rem) {
+    .stage {
+      grid-template-columns: minmax(0, 1fr) minmax(17rem, 21rem);
+      column-gap: clamp(2rem, 5vw, 4rem);
+    }
+
+    .stage__companion {
+      position: sticky;
+      /* Clears the sticky masthead. */
+      top: 5.5rem;
+      align-self: start;
+      padding-top: clamp(3rem, 7vw, 5rem);
+    }
+  }
+
+  /*
+   * Narrow: the same single element, reordered to sit directly under the hero as one
+   * compact scene. Ordering rather than a second copy — two instances would mean two
+   * sets of observers and two things to keep in sync.
+   */
+  @media (max-width: 63.999rem) {
+    .hero { order: 0; }
+    .stage__companion { order: 1; }
+    .stage__flow { order: 2; }
+
+    .stage__companion {
+      margin-bottom: clamp(1rem, 5vw, 2.5rem);
+      max-width: 22rem;
+    }
+  }
+
+  /* ----------------------------------------------------------------------- coder ----- */
+
+  .coder {
+    margin: 0;
+  }
+
+  /*
+   * Matches the SVG viewBox, so the screen overlay can be positioned as percentages of
+   * the same box the artwork is drawn in. cqw units then scale the code with the panel.
+   */
+  .coder__frame {
+    position: relative;
+    aspect-ratio: 320 / 260;
+    container-type: inline-size;
+  }
+
+  .coder__art {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  /* One hairline weight throughout — the figure should read as a plate in a paper. */
+  .coder__stroke,
+  .coder__desk {
+    fill: none;
+    stroke: rgb(var(--c-ink) / 0.72);
+    stroke-width: 1.25;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .coder__desk {
+    stroke: rgb(var(--c-ink) / 0.35);
+  }
+
+  /* --------------------------------------------------------------- coder / screen ---- */
+
+  /* Percentages of the 320x260 viewBox: the monitor rect is x=140 y=22 w=158 h=118. */
+  .coder__screen {
+    position: absolute;
+    left: 43.75%;
+    top: 8.462%;
+    width: 49.375%;
+    height: 45.385%;
+    padding: 1.6cqw 1.9cqw;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8cqw;
+    overflow: hidden;
+  }
+
+  .coder__caption {
+    font-family: theme("fontFamily.mono");
+    font-size: 2.5cqw;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgb(var(--c-ink-faint));
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: none;
+  }
+
+  .coder__code {
+    margin: 0;
+    font-family: theme("fontFamily.mono");
+    /* Sized so the widest snippet — 20 columns — clears the monitor's inner width at
+       the narrowest the column ever gets. cqw, so it tracks the panel rather than the
+       viewport. */
+    font-size: 3.6cqw;
+    line-height: 1.3;
+    color: rgb(var(--c-ink-muted));
+    white-space: pre;
+    overflow: hidden;
+    flex: 1 1 auto;
+  }
+
+  /*
+   * The caret trails whatever has been typed so far, so it needs no positioning of its
+   * own. step-end holds each half of the cycle rather than fading between them.
+   */
+  .coder__code::after {
+    content: "▍";
+    color: rgb(var(--c-ember));
+    animation: coder-caret 1.06s step-end infinite;
+  }
+
+  @keyframes coder-caret {
+    0%, 50% { opacity: 1; }
+    50.01%, 100% { opacity: 0; }
+  }
+
+  /* The panel is decorative; the caption repeats below it as the figure's label. */
+  .coder__legend {
+    margin-top: 0.75rem;
+    font-family: theme("fontFamily.mono");
+    font-size: 0.62rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgb(var(--c-ink-faint));
+  }
+
+  .coder__legend::before {
+    content: "fig. ";
+    color: rgb(var(--c-ember));
+  }
+
+  /* ---------------------------------------------------------------- coder / poses ---- */
+
+  /*
+   * Poses are transforms on named groups with a transition, so moving between them
+   * interpolates instead of cutting. Everything that moves is transform or opacity.
+   */
+  .coder__head,
+  .coder__torso,
+  .coder__arm,
+  .coder__wave,
+  .coder__think,
+  .coder__face {
+    transform-box: fill-box;
+    transition:
+      transform 700ms var(--ease-out),
+      opacity 500ms var(--ease-out);
+  }
+
+  .coder__head { transform-origin: 50% 100%; }
+  .coder__torso { transform-origin: 50% 100%; }
+  .coder__arm { transform-origin: 0% 0%; }
+  .coder__wave { transform-origin: 0% 100%; }
+  .coder__think { transform-origin: 0% 100%; }
+
+  /* Hidden by default; each is opted into by exactly one pose. */
+  .coder__wave,
+  .coder__think,
+  .coder__face {
+    opacity: 0;
+  }
+
+  /* typing — the default. Hands work; everything else rests. */
+  .coder--typing .coder__arm--near { animation: coder-key-a 340ms ease-in-out infinite; }
+  .coder--typing .coder__arm--far { animation: coder-key-b 340ms ease-in-out infinite; }
+  .coder--typing .coder__head { animation: coder-bob 6s ease-in-out infinite; }
+
+  @keyframes coder-key-a {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(2.2deg); }
+  }
+
+  /* Offset half a cycle from the near arm, so the two hands alternate. */
+  @keyframes coder-key-b {
+    0%, 100% { transform: rotate(1.8deg); }
+    50% { transform: rotate(0deg); }
+  }
+
+  @keyframes coder-bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(1.5px); }
+  }
+
+  /* reviewing — leans back from the keyboard to read. */
+  .coder--reviewing .coder__torso { transform: rotate(-5deg) translateY(-2px); }
+  .coder--reviewing .coder__head { transform: rotate(-6deg) translate(-4px, -3px); }
+  .coder--reviewing .coder__arm--near { transform: rotate(-9deg) translate(-6px, 4px); }
+  .coder--reviewing .coder__arm--far { transform: rotate(-7deg) translate(-5px, 3px); }
+
+  /* thinking — still hands, head tilted up, marks rising. */
+  .coder--thinking .coder__head { transform: rotate(-11deg) translateY(-2px); }
+  .coder--thinking .coder__arm--near { transform: rotate(-14deg) translate(-10px, 6px); }
+  .coder--thinking .coder__arm--far { transform: rotate(-4deg) translate(-3px, 2px); }
+  .coder--thinking .coder__think { opacity: 1; animation: coder-drift 4.5s ease-in-out infinite; }
+
+  @keyframes coder-drift {
+    0%, 100% { transform: translate(0, 0); opacity: 0.35; }
+    50% { transform: translate(3px, -5px); opacity: 1; }
+  }
+
+  /* waving — turns to the reader and raises a hand. */
+  .coder--waving .coder__head { transform: rotate(6deg); }
+  .coder--waving .coder__face { opacity: 1; }
+  .coder--waving .coder__wave { opacity: 1; animation: coder-wave 1.6s ease-in-out infinite; }
+  .coder--waving .coder__arm--far { transform: rotate(-6deg) translate(-4px, 3px); }
+
+  @keyframes coder-wave {
+    0%, 100% { transform: rotate(-6deg); }
+    50% { transform: rotate(9deg); }
+  }
+
+  /*
+   * Set by coder.js when the panel scrolls off or the tab is hidden. Idle loops are
+   * decoration; there is no reason to keep a compositor busy for a figure nobody sees.
+   */
+  .coder.is-idle *,
+  .coder.is-idle *::after {
+    animation-play-state: paused;
+  }
+
+  /* Steam drifts by pulling the dash pattern along the path. */
+  .coder__steam {
+    stroke: rgb(var(--c-ink) / 0.28);
+    stroke-dasharray: 6 30;
+    animation: coder-steam 4s linear infinite;
+  }
+
+  .coder__steam--b {
+    animation-duration: 5.2s;
+    animation-delay: -1.4s;
+  }
+
+  @keyframes coder-steam {
+    from { stroke-dashoffset: 36; opacity: 0; }
+    35% { opacity: 1; }
+    to { stroke-dashoffset: 0; opacity: 0; }
   }
 
   /* ---------------------------------------------------------------------- motion ----- */
@@ -703,6 +980,16 @@
 
     html.js [data-enter] {
       animation: none !important;
+    }
+
+    /*
+     * The scene stays — it is an illustration, and a still one is still worth looking
+     * at. What goes is every loop and every pose transition, so nothing moves.
+     */
+    .coder *,
+    .coder *::after {
+      animation: none !important;
+      transition: none !important;
     }
   }
 }

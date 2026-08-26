@@ -22,7 +22,10 @@ RUN . /root/.bashrc; \
 
 COPY . .
 
+# Fonts before CSS: the subsets are committed, but regenerating them here keeps the image
+# honest if assets/fonts ever drifts from what scripts/build-fonts.mjs produces.
 RUN . /root/.bashrc; \
+    yarn fonts; \
     yarn build
 
 RUN cargo install --target x86_64-unknown-linux-musl --path .

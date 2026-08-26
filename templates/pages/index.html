@@ -8,16 +8,31 @@
     {% include "partials/nav.html" %}
 
     <main id="main">
-        {% include "sections/hero.html" %}
-        {% include "sections/experience.html" %}
-        {% include "sections/open-source.html" %}
-        {% include "sections/toolkit.html" %}
-        {% include "sections/elsewhere.html" %}
+        {#-
+          The stage is the two-column grid: reading flow, and the sticky coder panel
+          beside it. The hero spans both columns (see .hero in styles/app.css) so its
+          display type is not narrowed to make room for the scene.
+        -#}
+        <div class="shell stage">
+            {% include "sections/hero.html" %}
+
+            <div class="stage__flow">
+                {% include "sections/experience.html" %}
+                {% include "sections/open-source.html" %}
+                {% include "sections/toolkit.html" %}
+                {% include "sections/elsewhere.html" %}
+            </div>
+
+            <aside class="stage__companion">
+                {% include "partials/coder.html" %}
+            </aside>
+        </div>
     </main>
 
     {% include "partials/footer.html" %}
 
     <script src="/assets/js/reveal.js?v={{ js_v }}" defer></script>
+    <script src="/assets/js/coder.js?v={{ coder_v }}" defer></script>
 </body>
 
 </html>
