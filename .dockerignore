@@ -1,0 +1,9 @@
+# Without this, `COPY . .` overwrites the container's Linux-built node_modules with the
+# host's (macOS) one, after `yarn install` has already run. Also keeps the build context small.
+node_modules
+target
+.git
+.gitignore
+.idea
+.DS_Store
+**/.DS_Store

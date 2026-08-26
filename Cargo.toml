@@ -18,6 +18,5 @@ axum = { version = "0.7.5", features = ["macros"] }
 askama = { version = "0.12.1", features = ["with-axum"] }
 askama_axum = "0.4.0"
 tokio = { version = "1.38.0", features = ["full"] }
-markdown = "=1.0.0-alpha.18"
-rust-embed = "8.4.0"
+rust-embed = { version = "8.4.0", features = ["include-exclude"] }
 mime_guess = "2.0.5"

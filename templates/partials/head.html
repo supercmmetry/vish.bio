@@ -1,0 +1,48 @@
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+    {#- Blocking, and deliberately first: the reveal CSS only hides content while `.js` is
+        present, so this must land before first paint. The failsafe un-hides everything if
+        reveal.js is blocked, 404s, or throws. -#}
+    {% raw %}
+    <script>
+        (function (d) {
+            var e = d.documentElement;
+            e.className += (e.className ? " " : "") + "js";
+            setTimeout(function () {
+                if (!window.__revealReady) {
+                    e.className = e.className.replace(/(^|\s)js(\s|$)/, "$1$2").trim();
+                }
+            }, 2000);
+        })(document);
+    </script>
+    {% endraw %}
+
+    <title>{{ site.name }} — {{ site.role }}, {{ site.employer }}</title>
+    <meta name="description" content="{{ site.description }}">
+    <link rel="canonical" href="{{ site.canonical }}">
+    <meta name="author" content="{{ site.name }}">
+    <meta name="theme-color" content="{{ site.theme_color }}">
+    <meta name="color-scheme" content="light">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="{{ site.name }}">
+    <meta property="og:url" content="{{ site.canonical }}">
+    <meta property="og:title" content="{{ site.name }} — {{ site.role }}, {{ site.employer }}">
+    <meta property="og:description" content="{{ site.description }}">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{ site.name }} — {{ site.role }}, {{ site.employer }}">
+    <meta name="twitter:description" content="{{ site.description }}">
+
+    <link rel="icon" href="/assets/icons/favicon.svg" type="image/svg+xml">
+
+    {#- No ?v= token here on purpose: these URLs must match the @font-face src in the
+        stylesheet exactly, or the preload is wasted and the font downloads twice.
+        `crossorigin` is required even same-origin — fonts always fetch in CORS mode. -#}
+    <link rel="preload" href="/assets/fonts/cmu-serif-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/assets/fonts/cmu-typewriter-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+
+    <link rel="stylesheet" href="/assets/app.generated.css?v={{ css_v }}">
+</head>

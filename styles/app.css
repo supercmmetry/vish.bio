@@ -1,0 +1,1024 @@
+@tailwind base;
+
+/* ---------------------------------------------------------------------------------------
+   Fonts — Computer Modern, self-hosted latin subsets, embedded in the binary and served
+   from /assets/fonts. Built by `yarn fonts` (scripts/build-fonts.mjs).
+
+   Written by hand rather than importing the `computer-modern` package's own CSS, which
+   declares `font-style: roman` — not a valid CSS value, so browsers discard the rule
+   outright. The package also names regular weight 500; it is declared as 400 here.
+
+   ON size-adjust — this is what keeps the type from looking squished.
+
+   Computer Modern is drawn narrower and with a far smaller x-height than the faces it
+   replaces. Measured from the outlines (em = 1000):
+
+                        cell width   x-height   cap-height
+     IBM Plex Mono         0.600       0.516      0.698
+     Instrument Sans         —         0.510      0.720
+     Instrument Serif        —         0.510      0.720
+     CMU Typewriter        0.525       0.431      0.611
+     CMU Serif               —         0.431      0.683
+
+   Dropped in untouched, every word would render 12.5% narrower and sit noticeably small.
+   size-adjust scales the outlines at the font layer, so every existing font-size in this
+   stylesheet keeps its intended physical size and no call site has to be revisited.
+
+   116% for CMU Typewriter is deliberately between the two anchors it has to satisfy: it
+   now serves both the old mono role (114.3% would match IBM Plex Mono's cell exactly) and
+   the old body-sans role (118.3% would match Instrument Sans's x-height exactly). It
+   lands within 2% of both, erring 1.5% wide on the cell — the safe direction, since the
+   requirement is that words not be cramped.
+
+   108% for CMU Serif holds the old cap-height (105.4% would match it exactly) without
+   chasing Instrument Serif's much larger x-height (118.3%), which would inflate the caps
+   by 12% and flatten out the small-x-height proportion that makes Computer Modern read
+   like Computer Modern.
+
+   line-gap-override zeroes the 0.2em phantom gap both families declare in hhea; every
+   line-height here is an explicit number, so the gap only ever inflated the initial
+   content box. Ascent and descent are left native — overriding them risks clipping
+   diacritics for the sake of a box nothing depends on.
+   --------------------------------------------------------------------------------------- */
+
+@font-face {
+  font-family: "CMU Serif";
+  src: url("/assets/fonts/cmu-serif-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  size-adjust: 108%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "CMU Serif";
+  src: url("/assets/fonts/cmu-serif-400-italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+  size-adjust: 108%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "CMU Typewriter Text";
+  src: url("/assets/fonts/cmu-typewriter-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  size-adjust: 116%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "CMU Typewriter Text";
+  src: url("/assets/fonts/cmu-typewriter-700-normal.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  size-adjust: 116%;
+  line-gap-override: 0%;
+}
+
+/* ---------------------------------------------------------------------------------------
+   Everything below lives in @layer base so Tailwind never purges it (only the components
+   and utilities layers are purged) and so utility classes still win when they're used.
+   --------------------------------------------------------------------------------------- */
+
+@layer base {
+  :root {
+    --c-paper: 250 248 244;
+    --c-paper-sunk: 242 237 229;
+    --c-ink: 22 19 15;
+    --c-ink-muted: 85 80 74;
+    --c-ink-faint: 139 133 124;
+    --c-line: 228 222 212;
+    --c-accent: 28 61 90;
+    --c-ember: 163 69 24;
+    --c-coffee: 92 56 28;
+
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --gutter: clamp(1.25rem, 6vw, 4rem);
+
+    color-scheme: light;
+  }
+
+  /* html as well as body — body alone leaves iOS rubber-band overscroll flashing white. */
+  html,
+  body {
+    background-color: rgb(var(--c-paper));
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    color: rgb(var(--c-ink-muted));
+    font-family: theme("fontFamily.sans");
+    font-size: 1rem;
+    line-height: 1.65;
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: rgb(var(--c-accent) / 0.14);
+    color: rgb(var(--c-ink));
+  }
+
+  :focus-visible {
+    outline: 2px solid rgb(var(--c-accent));
+    outline-offset: 3px;
+    border-radius: 1px;
+  }
+
+  [id] {
+    scroll-margin-top: 5rem;
+  }
+
+  /* ------------------------------------------------------------------ typography ----- */
+
+  .display {
+    font-family: theme("fontFamily.display");
+    font-weight: 400;
+    color: rgb(var(--c-ink));
+    letter-spacing: 0;
+  }
+
+  .meta {
+    font-family: theme("fontFamily.mono");
+    font-size: 0.75rem;
+    line-height: 1.4;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgb(var(--c-ink-faint));
+  }
+
+  .measure {
+    max-width: 60ch;
+  }
+
+  /* ----------------------------------------------------------------------- links ----- */
+
+  .link {
+    color: rgb(var(--c-accent));
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+    text-decoration-color: rgb(var(--c-accent) / 0.32);
+    transition: text-decoration-color 260ms ease, color 260ms ease;
+  }
+
+  .link:hover {
+    text-decoration-color: rgb(var(--c-accent));
+  }
+
+  /* Single-line links (nav, hero actions) get a sweeping rule instead of an underline. */
+  .sweep {
+    color: rgb(var(--c-ink));
+    text-decoration: none;
+    background-image: linear-gradient(rgb(var(--c-accent)), rgb(var(--c-accent)));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0% 1px;
+    padding-bottom: 0.22em;
+    transition: background-size 420ms var(--ease-out), color 260ms ease;
+  }
+
+  .sweep:hover,
+  .sweep:focus-visible {
+    color: rgb(var(--c-accent));
+    background-size: 100% 1px;
+  }
+
+  .sweep[aria-current="page"] {
+    background-size: 100% 1px;
+    color: rgb(var(--c-accent));
+  }
+
+  /* ---------------------------------------------------------------------- layout ----- */
+
+  .shell {
+    width: 100%;
+    max-width: 72rem;
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
+    padding: 0.75rem 1.25rem;
+    background-color: rgb(var(--c-ink));
+    color: rgb(var(--c-paper));
+    font-family: theme("fontFamily.mono");
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  .skip-link:focus {
+    left: 0;
+  }
+
+  /* -------------------------------------------------------------------- masthead ----- */
+
+  .masthead {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background-color: rgb(var(--c-paper) / 0.86);
+    backdrop-filter: saturate(180%) blur(12px);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    border-bottom: 1px solid rgb(var(--c-line));
+  }
+
+  .masthead__inner {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-block: 1.15rem;
+  }
+
+  .masthead__name {
+    font-family: theme("fontFamily.display");
+    font-size: 1.25rem;
+    letter-spacing: 0;
+    color: rgb(var(--c-ink));
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .masthead__nav {
+    display: flex;
+    align-items: baseline;
+    gap: clamp(1rem, 4vw, 2.25rem);
+    font-family: theme("fontFamily.mono");
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  /* ------------------------------------------------------------------------ hero ----- */
+
+  .hero {
+    padding-block: clamp(4.5rem, 14vw, 9.5rem) clamp(3.5rem, 9vw, 6rem);
+  }
+
+  .hero__eyebrow {
+    margin-bottom: clamp(1.75rem, 4vw, 2.75rem);
+    color: rgb(var(--c-ink-faint));
+  }
+
+  .hero__title {
+    font-family: theme("fontFamily.display");
+    font-weight: 400;
+    font-size: clamp(2.75rem, 1.2rem + 6vw, 5.5rem);
+    line-height: 1;
+    letter-spacing: 0;
+    color: rgb(var(--c-ink));
+    max-width: 16ch;
+    text-wrap: balance;
+  }
+
+  .hero__title em {
+    font-style: italic;
+    color: rgb(var(--c-ember));
+  }
+
+  .hero__deck {
+    margin-top: clamp(1.75rem, 4vw, 2.5rem);
+    max-width: 50ch;
+    font-size: clamp(1.0625rem, 0.95rem + 0.6vw, 1.375rem);
+    line-height: 1.55;
+    letter-spacing: 0;
+    color: rgb(var(--c-ink-muted));
+    text-wrap: pretty;
+  }
+
+  .hero__actions {
+    margin-top: clamp(2.25rem, 5vw, 3rem);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    font-family: theme("fontFamily.mono");
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  /* Masthead-style byline strip. */
+  .hero__byline {
+    margin-top: clamp(3.5rem, 8vw, 5rem);
+    border-top: 1px solid rgb(var(--c-line));
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (min-width: 56rem) {
+    .hero__byline {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .hero__fact {
+    padding: 1.25rem 1.25rem 1.25rem 0;
+    border-bottom: 1px solid rgb(var(--c-line));
+  }
+
+  @media (min-width: 56rem) {
+    .hero__fact {
+      border-bottom: 0;
+    }
+
+    .hero__fact + .hero__fact {
+      padding-left: 1.5rem;
+      border-left: 1px solid rgb(var(--c-line));
+    }
+  }
+
+  .hero__fact dt {
+    font-family: theme("fontFamily.mono");
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgb(var(--c-ink-faint));
+  }
+
+  .hero__fact dd {
+    margin-top: 0.4rem;
+    font-size: 0.9375rem;
+    line-height: 1.45;
+    color: rgb(var(--c-ink));
+  }
+
+  /* -------------------------------------------------------------------- sections ----- */
+
+  .section {
+    padding-block: clamp(3rem, 7vw, 5rem);
+  }
+
+  .section__head {
+    display: flex;
+    align-items: baseline;
+    gap: 1.25rem;
+    margin-bottom: clamp(2rem, 5vw, 3.25rem);
+  }
+
+  .section__index {
+    font-family: theme("fontFamily.mono");
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    color: rgb(var(--c-ember));
+    flex: none;
+  }
+
+  .section__label {
+    font-family: theme("fontFamily.mono");
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgb(var(--c-ink));
+    flex: none;
+  }
+
+  .section__rule {
+    flex: 1 1 auto;
+    height: 1px;
+    background-color: rgb(var(--c-line));
+    transform-origin: left center;
+    transition: transform 900ms var(--ease-out) 100ms;
+  }
+
+  .section__lede {
+    font-family: theme("fontFamily.display");
+    font-size: clamp(1.5rem, 1rem + 2vw, 2.25rem);
+    line-height: 1.2;
+    letter-spacing: 0;
+    color: rgb(var(--c-ink));
+    max-width: 24ch;
+    margin-bottom: clamp(2rem, 5vw, 3rem);
+    text-wrap: balance;
+  }
+
+  /* --------------------------------------------------------------------- entries ----- */
+
+  .entry {
+    display: grid;
+    gap: 0.5rem 4rem;
+    grid-template-columns: minmax(0, 1fr);
+    padding-block: clamp(2rem, 5vw, 3rem);
+    border-top: 1px solid rgb(var(--c-line));
+  }
+
+  @media (min-width: 48rem) {
+    .entry {
+      grid-template-columns: minmax(0, 13rem) minmax(0, 1fr);
+    }
+  }
+
+  .entry--minor {
+    padding-block: clamp(1.5rem, 3.5vw, 2rem);
+  }
+
+  .entry__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .entry__company {
+    font-family: theme("fontFamily.mono");
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgb(var(--c-ink));
+  }
+
+  .entry__period,
+  .entry__context {
+    font-family: theme("fontFamily.mono");
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: rgb(var(--c-ink-faint));
+  }
+
+  .entry__title {
+    font-family: theme("fontFamily.display");
+    font-size: clamp(1.4rem, 1rem + 1.4vw, 1.9rem);
+    line-height: 1.15;
+    letter-spacing: 0;
+    color: rgb(var(--c-ink));
+    margin-bottom: 1.25rem;
+  }
+
+  .entry--minor .entry__title {
+    font-size: 1.15rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .highlight + .highlight {
+    margin-top: 1.75rem;
+  }
+
+  .highlight__headline {
+    font-family: theme("fontFamily.display");
+    font-size: 1.1875rem;
+    line-height: 1.35;
+    letter-spacing: 0;
+    color: rgb(var(--c-ink));
+    margin-bottom: 0.35rem;
+  }
+
+  .highlight__body {
+    max-width: 60ch;
+    text-wrap: pretty;
+  }
+
+  /* ----------------------------------------------------------------------- chips ----- */
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.1rem;
+    margin-top: 1.5rem;
+    font-family: theme("fontFamily.mono");
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgb(var(--c-ink-faint));
+  }
+
+  .chips--flush {
+    margin-top: 0;
+  }
+
+  .chip {
+    position: relative;
+  }
+
+  .chip + .chip::before {
+    content: "";
+    position: absolute;
+    left: -0.6rem;
+    top: 50%;
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+    background-color: rgb(var(--c-line));
+    transform: translateY(-50%);
+  }
+
+  /* -------------------------------------------------------------------- projects ----- */
+
+  .project__name {
+    font-family: theme("fontFamily.display");
+    font-size: clamp(1.4rem, 1rem + 1.4vw, 1.9rem);
+    line-height: 1.15;
+    letter-spacing: 0;
+    color: rgb(var(--c-ink));
+    text-decoration: none;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    transition: color 260ms ease;
+  }
+
+  .project__name:hover {
+    color: rgb(var(--c-accent));
+  }
+
+  .project__arrow {
+    font-family: theme("fontFamily.mono");
+    font-size: 0.8rem;
+    color: rgb(var(--c-ink-faint));
+    transition: transform 380ms var(--ease-out), color 260ms ease;
+  }
+
+  .project__name:hover .project__arrow {
+    color: rgb(var(--c-accent));
+    transform: translate(0.15rem, -0.15rem);
+  }
+
+  .project__blurb {
+    margin-top: 0.6rem;
+    max-width: 60ch;
+    text-wrap: pretty;
+  }
+
+  /* --------------------------------------------------------------------- toolkit ----- */
+
+  .toolkit__group {
+    display: grid;
+    gap: 0.5rem 4rem;
+    grid-template-columns: minmax(0, 1fr);
+    padding-block: 1.5rem;
+    border-top: 1px solid rgb(var(--c-line));
+  }
+
+  @media (min-width: 48rem) {
+    .toolkit__group {
+      grid-template-columns: minmax(0, 13rem) minmax(0, 1fr);
+    }
+  }
+
+  .toolkit__items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.4rem;
+    font-family: theme("fontFamily.mono");
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+    color: rgb(var(--c-ink));
+  }
+
+  /* -------------------------------------------------------------------- elsewhere ---- */
+
+  .contact__line {
+    font-family: theme("fontFamily.display");
+    font-size: clamp(1.75rem, 1rem + 2.6vw, 3rem);
+    line-height: 1.15;
+    letter-spacing: 0;
+    color: rgb(var(--c-ink));
+    max-width: 20ch;
+    text-wrap: balance;
+  }
+
+  .contact__note {
+    margin-top: 1.25rem;
+    max-width: 48ch;
+    text-wrap: pretty;
+  }
+
+  .links {
+    margin-top: clamp(2.5rem, 6vw, 3.5rem);
+    border-top: 1px solid rgb(var(--c-line));
+  }
+
+  .links__row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.3rem;
+    align-items: baseline;
+    padding-block: 1rem;
+    border-bottom: 1px solid rgb(var(--c-line));
+  }
+
+  @media (min-width: 34rem) {
+    .links__row {
+      grid-template-columns: minmax(0, 10.5rem) minmax(0, 1fr);
+      gap: 1rem 2rem;
+    }
+  }
+
+  /* An email address offers no break opportunity the browser will take on its own. */
+  .links__row .link {
+    overflow-wrap: anywhere;
+  }
+
+  .links__label {
+    font-family: theme("fontFamily.mono");
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgb(var(--c-ink-faint));
+  }
+
+  /* --------------------------------------------------------------------- colophon ---- */
+
+  .colophon {
+    padding-block: clamp(2.5rem, 6vw, 4rem);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem 2rem;
+    font-family: theme("fontFamily.mono");
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgb(var(--c-ink-faint));
+  }
+
+  /* ----------------------------------------------------------------------- stage ----- */
+
+  /*
+   * Two columns below 64rem's worth of width: the reading flow, and a companion that
+   * sticks while it scrolls past. The hero spans both so its display type keeps the full
+   * measure — narrowing it to make room for the scene would cost more than the scene adds.
+   */
+
+  .stage {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hero {
+    grid-column: 1 / -1;
+  }
+
+  @media (min-width: 64rem) {
+    .stage {
+      grid-template-columns: minmax(0, 1fr) minmax(17rem, 21rem);
+      column-gap: clamp(2rem, 5vw, 4rem);
+    }
+
+    .stage__companion {
+      position: sticky;
+      /* Clears the sticky masthead. */
+      top: 5.5rem;
+      align-self: start;
+      padding-top: clamp(3rem, 7vw, 5rem);
+    }
+  }
+
+  /*
+   * Narrow: the same single element, reordered to sit directly under the hero as one
+   * compact scene. Ordering rather than a second copy — two instances would mean two
+   * sets of observers and two things to keep in sync.
+   */
+  @media (max-width: 63.999rem) {
+    .hero { order: 0; }
+    .stage__companion { order: 1; }
+    .stage__flow { order: 2; }
+
+    .stage__companion {
+      margin-bottom: clamp(1rem, 5vw, 2.5rem);
+      max-width: 22rem;
+    }
+  }
+
+  /* ----------------------------------------------------------------------- coder ----- */
+
+  .coder {
+    margin: 0;
+  }
+
+  /*
+   * Matches the SVG viewBox, so the screen overlay can be positioned as percentages of
+   * the same box the artwork is drawn in. cqw units then scale the code with the panel.
+   */
+  .coder__frame {
+    position: relative;
+    aspect-ratio: 320 / 260;
+    container-type: inline-size;
+  }
+
+  .coder__art {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  /* One hairline weight throughout — the figure should read as a plate in a paper. */
+  .coder__stroke,
+  .coder__desk {
+    fill: none;
+    stroke: rgb(var(--c-ink) / 0.72);
+    stroke-width: 1.25;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .coder__desk {
+    stroke: rgb(var(--c-ink) / 0.35);
+  }
+
+  /* --------------------------------------------------------------- coder / screen ---- */
+
+  /* Percentages of the 320x260 viewBox: the monitor rect is x=140 y=22 w=158 h=118. */
+  .coder__screen {
+    position: absolute;
+    left: 43.75%;
+    top: 8.462%;
+    width: 49.375%;
+    height: 45.385%;
+    padding: 1.6cqw 1.9cqw;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8cqw;
+    overflow: hidden;
+  }
+
+  .coder__caption {
+    font-family: theme("fontFamily.mono");
+    font-size: 2.5cqw;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgb(var(--c-ink-faint));
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: none;
+  }
+
+  .coder__code {
+    margin: 0;
+    font-family: theme("fontFamily.mono");
+    /* Sized so the widest snippet — 20 columns — clears the monitor's inner width at
+       the narrowest the column ever gets. cqw, so it tracks the panel rather than the
+       viewport. */
+    font-size: 3.6cqw;
+    line-height: 1.3;
+    color: rgb(var(--c-ink-muted));
+    white-space: pre;
+    overflow: hidden;
+    flex: 1 1 auto;
+  }
+
+  /*
+   * The caret trails whatever has been typed so far, so it needs no positioning of its
+   * own. step-end holds each half of the cycle rather than fading between them.
+   */
+  .coder__code::after {
+    content: "▍";
+    color: rgb(var(--c-ember));
+    animation: coder-caret 1.06s step-end infinite;
+  }
+
+  @keyframes coder-caret {
+    0%, 50% { opacity: 1; }
+    50.01%, 100% { opacity: 0; }
+  }
+
+  /* The panel is decorative; the caption repeats below it as the figure's label. */
+  .coder__legend {
+    margin-top: 0.75rem;
+    font-family: theme("fontFamily.mono");
+    font-size: 0.62rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgb(var(--c-ink-faint));
+  }
+
+  .coder__legend::before {
+    content: "fig. ";
+    color: rgb(var(--c-ember));
+  }
+
+  /* ---------------------------------------------------------------- coder / poses ---- */
+
+  /*
+   * Poses are transforms on named groups with a transition, so moving between them
+   * interpolates instead of cutting. Everything that moves is transform or opacity.
+   */
+  .coder__head,
+  .coder__torso,
+  .coder__arm,
+  .coder__wave,
+  .coder__think,
+  .coder__face {
+    transform-box: fill-box;
+    transition:
+      transform 700ms var(--ease-out),
+      opacity 500ms var(--ease-out);
+  }
+
+  .coder__head { transform-origin: 50% 100%; }
+  .coder__torso { transform-origin: 50% 100%; }
+  .coder__arm { transform-origin: 0% 0%; }
+  .coder__wave { transform-origin: 0% 100%; }
+  .coder__think { transform-origin: 0% 100%; }
+
+  /* Hidden by default; each is opted into by exactly one pose. */
+  .coder__wave,
+  .coder__think,
+  .coder__face {
+    opacity: 0;
+  }
+
+  /* typing — the default. Hands work; everything else rests. */
+  .coder--typing .coder__arm--near { animation: coder-key-a 340ms ease-in-out infinite; }
+  .coder--typing .coder__arm--far { animation: coder-key-b 340ms ease-in-out infinite; }
+  .coder--typing .coder__head { animation: coder-bob 6s ease-in-out infinite; }
+
+  @keyframes coder-key-a {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(2.2deg); }
+  }
+
+  /* Offset half a cycle from the near arm, so the two hands alternate. */
+  @keyframes coder-key-b {
+    0%, 100% { transform: rotate(1.8deg); }
+    50% { transform: rotate(0deg); }
+  }
+
+  @keyframes coder-bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(1.5px); }
+  }
+
+  /* reviewing — leans back from the keyboard to read. */
+  .coder--reviewing .coder__torso { transform: rotate(-5deg) translateY(-2px); }
+  .coder--reviewing .coder__head { transform: rotate(-6deg) translate(-4px, -3px); }
+  .coder--reviewing .coder__arm--near { transform: rotate(-9deg) translate(-6px, 4px); }
+  .coder--reviewing .coder__arm--far { transform: rotate(-7deg) translate(-5px, 3px); }
+
+  /* thinking — still hands, head tilted up, marks rising. */
+  .coder--thinking .coder__head { transform: rotate(-11deg) translateY(-2px); }
+  .coder--thinking .coder__arm--near { transform: rotate(-14deg) translate(-10px, 6px); }
+  .coder--thinking .coder__arm--far { transform: rotate(-4deg) translate(-3px, 2px); }
+  .coder--thinking .coder__think { opacity: 1; animation: coder-drift 4.5s ease-in-out infinite; }
+
+  @keyframes coder-drift {
+    0%, 100% { transform: translate(0, 0); opacity: 0.35; }
+    50% { transform: translate(3px, -5px); opacity: 1; }
+  }
+
+  /* waving — turns to the reader and raises a hand. */
+  .coder--waving .coder__head { transform: rotate(6deg); }
+  .coder--waving .coder__face { opacity: 1; }
+  .coder--waving .coder__wave { opacity: 1; animation: coder-wave 1.6s ease-in-out infinite; }
+
+  /*
+   * The raised arm shares the near arm's shoulder — it *is* that arm, lifted. Without
+   * hiding the original the figure ends up with three hands. The far arm stays down and
+   * becomes the one still resting on the keyboard.
+   */
+  .coder--waving .coder__arm--near { opacity: 0; }
+  .coder--waving .coder__arm--far { transform: rotate(-6deg) translate(-4px, 3px); }
+
+  @keyframes coder-wave {
+    0%, 100% { transform: rotate(-6deg); }
+    50% { transform: rotate(9deg); }
+  }
+
+  /*
+   * Set by coder.js when the panel scrolls off or the tab is hidden. Idle loops are
+   * decoration; there is no reason to keep a compositor busy for a figure nobody sees.
+   */
+  .coder.is-idle *,
+  .coder.is-idle *::after {
+    animation-play-state: paused;
+  }
+
+  /*
+   * Coffee level. `--coffee-drain` runs 0 (full) to 1 (empty) and is written by coder.js
+   * from scroll progress; the mug's inner height is 17 units, so that is the full travel.
+   * Unset — no JavaScript — resolves to 0 and the cup is simply full.
+   */
+  .coder__coffee {
+    fill: rgb(var(--c-coffee));
+    transform: translateY(calc(var(--coffee-drain, 0) * 17px));
+  }
+
+  /*
+   * No transition, deliberately: this tracks the scrollbar rather than reacting to it,
+   * and easing would make the surface lag behind the reader's thumb.
+   */
+  .coder__steam-group {
+    opacity: calc(1 - var(--coffee-drain, 0));
+  }
+
+  /* Steam drifts by pulling the dash pattern along the path. */
+  .coder__steam {
+    stroke: rgb(var(--c-ink) / 0.28);
+    stroke-dasharray: 6 30;
+    animation: coder-steam 4s linear infinite;
+  }
+
+  .coder__steam--b {
+    animation-duration: 5.2s;
+    animation-delay: -1.4s;
+  }
+
+  @keyframes coder-steam {
+    from { stroke-dashoffset: 36; opacity: 0; }
+    35% { opacity: 1; }
+    to { stroke-dashoffset: 0; opacity: 0; }
+  }
+
+  /* ---------------------------------------------------------------------- motion ----- */
+
+  /*
+   * Content is visible by default. Hiding is opt-in and only applies once the inline
+   * head script has proven JS is alive by adding `.js` to <html>. If the script is
+   * blocked, 404s, or throws, nothing is ever hidden.
+   */
+
+  [data-reveal] {
+    transition:
+      opacity 700ms var(--ease-out) var(--reveal-delay, 0ms),
+      transform 700ms var(--ease-out) var(--reveal-delay, 0ms);
+  }
+
+  html.js [data-reveal]:not(.is-revealed) {
+    opacity: 0;
+    transform: translate3d(0, 1.5rem, 0);
+  }
+
+  /* `none`, not translate3d(0,0,0) — keeping a compositor layer at rest blurs text. */
+  [data-reveal].is-revealed {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Same specificity as the generic rule above, so source order decides. */
+  html.js [data-reveal="rule"]:not(.is-revealed) {
+    opacity: 1;
+    transform: scaleX(0);
+  }
+
+  /* Above the fold: pure CSS, so it starts at parse time rather than after the
+     deferred script boots. */
+  html.js [data-enter] {
+    animation: enter 900ms var(--ease-out) both;
+    animation-delay: var(--enter-delay, 0ms);
+  }
+
+  @keyframes enter {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 1.5rem, 0);
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    html.js [data-reveal]:not(.is-revealed),
+    html.js [data-reveal="rule"]:not(.is-revealed) {
+      opacity: 1;
+      transform: none;
+    }
+
+    [data-reveal],
+    .section__rule {
+      transition: none !important;
+    }
+
+    html.js [data-enter] {
+      animation: none !important;
+    }
+
+    /*
+     * The scene stays — it is an illustration, and a still one is still worth looking
+     * at. What goes is every loop and every pose transition, so nothing moves.
+     */
+    .coder *,
+    .coder *::after {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+}
+
+@tailwind components;
+@tailwind utilities;

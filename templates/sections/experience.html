@@ -1,0 +1,38 @@
+<section id="work" class="section" data-reveal-group data-scene-section="work">
+    <div class="section__head" data-reveal>
+        <span class="section__index">01</span>
+        <h2 class="section__label">Experience</h2>
+        <span class="section__rule" data-reveal="rule" aria-hidden="true"></span>
+    </div>
+
+    {% for role in experience.iter() %}
+    <article class="entry{% if role.minor %} entry--minor{% endif %}" data-reveal>
+        <div class="entry__meta">
+            <span class="entry__company">{{ role.company }}</span>
+            <time class="entry__period" datetime="{{ role.start_iso }}">{{ role.period }}</time>
+            {% if let Some(context) = role.context %}
+            <span class="entry__context">{{ context }}</span>
+            {% endif %}
+        </div>
+
+        <div class="entry__body">
+            <h3 class="entry__title">{{ role.title }}</h3>
+
+            {% for highlight in role.highlights.iter() %}
+            <div class="highlight">
+                {% if !highlight.headline.is_empty() %}
+                <h4 class="highlight__headline">{{ highlight.headline }}</h4>
+                {% endif %}
+                <p class="highlight__body">{{ highlight.body }}</p>
+            </div>
+            {% endfor %}
+
+            {% if !role.stack.is_empty() %}
+            <ul class="chips">
+                {% for item in role.stack.iter() %}<li class="chip">{{ item }}</li>{% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+    </article>
+    {% endfor %}
+</section>

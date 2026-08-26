@@ -7,8 +7,6 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
-    "@fullhuman/postcss-purgecss": "^6.0.0",
-    "@tailwindcss/typography": "^0.5.13",
     "autoprefixer": "^10.4.19",
     "cssnano": "^7.0.4",
     "npm-watch": "^0.13.0",
@@ -17,24 +15,32 @@
     "rimraf": "^5.0.8",
     "tailwindcss": "^3.4.4"
   },
+  "devDependencies": {
+    "computer-modern": "^0.1.3",
+    "subset-font": "^2.5.0"
+  },
   "watch": {
     "dev": {
-      "patterns": ["src", "templates", "assets"],
-      "extensions": "html,css,rs",
+      "patterns": [
+        "src",
+        "templates",
+        "styles"
+      ],
+      "extensions": "html,css,rs,js",
       "quiet": true,
       "legacyWatch": true,
-      "delay": 1000,
+      "delay": 300,
       "runOnChangeOnly": false
     }
   },
   "scripts": {
-    "clean": "rimraf asseta/tailwind.generated.css",
-    "build:tailwind": "postcss assets/tailwind.css -o assets/tailwind.generated.css",
-    "build:custom-css": "postcss assets/main.css -o assets/main.generated.css",
-    "build": "NODE_ENV=production yarn build:tailwind && yarn build:custom-css",
-    "release": "NODE_ENV=production yarn build && cargo build --release",
-    "dev": "yarn build && cargo run",
-    "start": "yarn release && cargo run --release",
+    "clean": "rimraf assets/app.generated.css",
+    "fonts": "node scripts/build-fonts.mjs",
+    "build": "NODE_ENV=production postcss styles/app.css -o assets/app.generated.css",
+    "build:dev": "postcss styles/app.css -o assets/app.generated.css",
+    "release": "yarn build && cargo build --release --locked",
+    "dev": "yarn build:dev && cargo run",
+    "start": "yarn release && ./target/release/vish-bio",
     "watch": "npm-watch"
   }
 }
