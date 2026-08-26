@@ -24,20 +24,24 @@ module.exports = {
         accent: 'rgb(var(--c-accent) / <alpha-value>)',
         ember: 'rgb(var(--c-ember) / <alpha-value>)',
       },
+      // Computer Modern throughout: CMU Serif for display, CMU Typewriter for everything
+      // else. `sans` and `mono` deliberately resolve to the same family — keeping both
+      // token names means the ~30 theme("fontFamily.x") call sites in styles/app.css stay
+      // put, and each still says which role it is playing.
       fontFamily: {
-        display: ['"Instrument Serif"', 'Georgia', ...defaultTheme.fontFamily.serif],
-        sans: ['"Instrument Sans Variable"', ...defaultTheme.fontFamily.sans],
-        mono: ['"IBM Plex Mono"', ...defaultTheme.fontFamily.mono],
+        display: ['"CMU Serif"', 'Georgia', ...defaultTheme.fontFamily.serif],
+        sans: ['"CMU Typewriter Text"', ...defaultTheme.fontFamily.mono],
+        mono: ['"CMU Typewriter Text"', ...defaultTheme.fontFamily.mono],
       },
       fontSize: {
-        display: ['clamp(2.75rem, 1.2rem + 6vw, 5.5rem)', { lineHeight: '1.0', letterSpacing: '-0.03em' }],
-        title: ['clamp(1.75rem, 1rem + 2.4vw, 2.75rem)', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
-        lede: ['clamp(1.0625rem, 0.95rem + 0.6vw, 1.375rem)', { lineHeight: '1.55', letterSpacing: '-0.005em' }],
+        display: ['clamp(2.75rem, 1.2rem + 6vw, 5.5rem)', { lineHeight: '1.0', letterSpacing: '0' }],
+        title: ['clamp(1.75rem, 1rem + 2.4vw, 2.75rem)', { lineHeight: '1.1', letterSpacing: '0' }],
+        lede: ['clamp(1.0625rem, 0.95rem + 0.6vw, 1.375rem)', { lineHeight: '1.55', letterSpacing: '0' }],
         meta: ['0.75rem', { lineHeight: '1.4', letterSpacing: '0.16em' }],
       },
       maxWidth: {
         shell: '72rem',
-        measure: '66ch',
+        measure: '60ch',
       },
       transitionTimingFunction: {
         out: 'cubic-bezier(0.16, 1, 0.3, 1)',

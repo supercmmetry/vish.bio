@@ -1,39 +1,84 @@
 @tailwind base;
 
 /* ---------------------------------------------------------------------------------------
-   Fonts — self-hosted latin subsets, embedded in the binary and served from /assets/fonts.
+   Fonts — Computer Modern, self-hosted latin subsets, embedded in the binary and served
+   from /assets/fonts. Built by `yarn fonts` (scripts/build-fonts.mjs).
+
+   Written by hand rather than importing the `computer-modern` package's own CSS, which
+   declares `font-style: roman` — not a valid CSS value, so browsers discard the rule
+   outright. The package also names regular weight 500; it is declared as 400 here.
+
+   ON size-adjust — this is what keeps the type from looking squished.
+
+   Computer Modern is drawn narrower and with a far smaller x-height than the faces it
+   replaces. Measured from the outlines (em = 1000):
+
+                        cell width   x-height   cap-height
+     IBM Plex Mono         0.600       0.516      0.698
+     Instrument Sans         —         0.510      0.720
+     Instrument Serif        —         0.510      0.720
+     CMU Typewriter        0.525       0.431      0.611
+     CMU Serif               —         0.431      0.683
+
+   Dropped in untouched, every word would render 12.5% narrower and sit noticeably small.
+   size-adjust scales the outlines at the font layer, so every existing font-size in this
+   stylesheet keeps its intended physical size and no call site has to be revisited.
+
+   116% for CMU Typewriter is deliberately between the two anchors it has to satisfy: it
+   now serves both the old mono role (114.3% would match IBM Plex Mono's cell exactly) and
+   the old body-sans role (118.3% would match Instrument Sans's x-height exactly). It
+   lands within 2% of both, erring 1.5% wide on the cell — the safe direction, since the
+   requirement is that words not be cramped.
+
+   108% for CMU Serif holds the old cap-height (105.4% would match it exactly) without
+   chasing Instrument Serif's much larger x-height (118.3%), which would inflate the caps
+   by 12% and flatten out the small-x-height proportion that makes Computer Modern read
+   like Computer Modern.
+
+   line-gap-override zeroes the 0.2em phantom gap both families declare in hhea; every
+   line-height here is an explicit number, so the gap only ever inflated the initial
+   content box. Ascent and descent are left native — overriding them risks clipping
+   diacritics for the sake of a box nothing depends on.
    --------------------------------------------------------------------------------------- */
 
 @font-face {
-  font-family: "Instrument Serif";
-  src: url("/assets/fonts/instrument-serif-latin-400-normal.woff2") format("woff2");
+  font-family: "CMU Serif";
+  src: url("/assets/fonts/cmu-serif-400-normal.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
+  size-adjust: 108%;
+  line-gap-override: 0%;
 }
 
 @font-face {
-  font-family: "Instrument Serif";
-  src: url("/assets/fonts/instrument-serif-latin-400-italic.woff2") format("woff2");
+  font-family: "CMU Serif";
+  src: url("/assets/fonts/cmu-serif-400-italic.woff2") format("woff2");
   font-weight: 400;
   font-style: italic;
   font-display: swap;
+  size-adjust: 108%;
+  line-gap-override: 0%;
 }
 
 @font-face {
-  font-family: "Instrument Sans Variable";
-  src: url("/assets/fonts/instrument-sans-latin-wght-normal.woff2") format("woff2");
-  font-weight: 400 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "IBM Plex Mono";
-  src: url("/assets/fonts/ibm-plex-mono-latin-400-normal.woff2") format("woff2");
+  font-family: "CMU Typewriter Text";
+  src: url("/assets/fonts/cmu-typewriter-400-normal.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
+  size-adjust: 116%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "CMU Typewriter Text";
+  src: url("/assets/fonts/cmu-typewriter-700-normal.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  size-adjust: 116%;
+  line-gap-override: 0%;
 }
 
 /* ---------------------------------------------------------------------------------------
@@ -72,8 +117,8 @@
   body {
     color: rgb(var(--c-ink-muted));
     font-family: theme("fontFamily.sans");
-    font-size: 1.0625rem;
-    line-height: 1.7;
+    font-size: 1rem;
+    line-height: 1.65;
     font-synthesis-weight: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -101,7 +146,7 @@
     font-family: theme("fontFamily.display");
     font-weight: 400;
     color: rgb(var(--c-ink));
-    letter-spacing: -0.03em;
+    letter-spacing: 0;
   }
 
   .meta {
@@ -114,7 +159,7 @@
   }
 
   .measure {
-    max-width: 66ch;
+    max-width: 60ch;
   }
 
   /* ----------------------------------------------------------------------- links ----- */
@@ -206,7 +251,7 @@
   .masthead__name {
     font-family: theme("fontFamily.display");
     font-size: 1.25rem;
-    letter-spacing: -0.01em;
+    letter-spacing: 0;
     color: rgb(var(--c-ink));
     text-decoration: none;
     white-space: nowrap;
@@ -238,7 +283,7 @@
     font-weight: 400;
     font-size: clamp(2.75rem, 1.2rem + 6vw, 5.5rem);
     line-height: 1;
-    letter-spacing: -0.035em;
+    letter-spacing: 0;
     color: rgb(var(--c-ink));
     max-width: 16ch;
     text-wrap: balance;
@@ -251,10 +296,10 @@
 
   .hero__deck {
     margin-top: clamp(1.75rem, 4vw, 2.5rem);
-    max-width: 54ch;
+    max-width: 50ch;
     font-size: clamp(1.0625rem, 0.95rem + 0.6vw, 1.375rem);
     line-height: 1.55;
-    letter-spacing: -0.005em;
+    letter-spacing: 0;
     color: rgb(var(--c-ink-muted));
     text-wrap: pretty;
   }
@@ -357,7 +402,7 @@
     font-family: theme("fontFamily.display");
     font-size: clamp(1.5rem, 1rem + 2vw, 2.25rem);
     line-height: 1.2;
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
     color: rgb(var(--c-ink));
     max-width: 24ch;
     margin-bottom: clamp(2rem, 5vw, 3rem);
@@ -410,7 +455,7 @@
     font-family: theme("fontFamily.display");
     font-size: clamp(1.4rem, 1rem + 1.4vw, 1.9rem);
     line-height: 1.15;
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
     color: rgb(var(--c-ink));
     margin-bottom: 1.25rem;
   }
@@ -428,13 +473,13 @@
     font-family: theme("fontFamily.display");
     font-size: 1.1875rem;
     line-height: 1.35;
-    letter-spacing: -0.01em;
+    letter-spacing: 0;
     color: rgb(var(--c-ink));
     margin-bottom: 0.35rem;
   }
 
   .highlight__body {
-    max-width: 66ch;
+    max-width: 60ch;
     text-wrap: pretty;
   }
 
@@ -478,7 +523,7 @@
     font-family: theme("fontFamily.display");
     font-size: clamp(1.4rem, 1rem + 1.4vw, 1.9rem);
     line-height: 1.15;
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
     color: rgb(var(--c-ink));
     text-decoration: none;
     display: inline-flex;
@@ -505,7 +550,7 @@
 
   .project__blurb {
     margin-top: 0.6rem;
-    max-width: 66ch;
+    max-width: 60ch;
     text-wrap: pretty;
   }
 
@@ -541,7 +586,7 @@
     font-family: theme("fontFamily.display");
     font-size: clamp(1.75rem, 1rem + 2.6vw, 3rem);
     line-height: 1.15;
-    letter-spacing: -0.025em;
+    letter-spacing: 0;
     color: rgb(var(--c-ink));
     max-width: 20ch;
     text-wrap: balance;
