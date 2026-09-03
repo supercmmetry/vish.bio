@@ -114,13 +114,13 @@ pub fn tenure() -> &'static str {
 
 pub static SITE: Site = Site {
     name: "Vishaal Selvaraj",
-    role: "Software Engineer II",
+    role: "Senior Software Engineer",
     employer: "Microsoft",
     location: "Bangalore, India",
     email: "vishaals2000@gmail.com",
-    description: "Vishaal Selvaraj — software engineer at Microsoft working on the Spark \
-                  query engine behind Microsoft Fabric. Query engines, cluster schedulers \
-                  and compression formats.",
+    description: "Vishaal Selvaraj — senior software engineer at Microsoft working on the \
+                  Spark query engine behind Microsoft Fabric. Query engines, cluster \
+                  schedulers and compression formats.",
     canonical: "https://vish.bio/",
     theme_color: "#faf8f4",
 };
@@ -128,9 +128,9 @@ pub static SITE: Site = Site {
 pub static EXPERIENCE: &[Role] = &[
     Role {
         company: "Microsoft",
-        title: "Software Engineer II",
-        start_iso: "2024-09",
-        period: "Sept 2024 — Present",
+        title: "Senior Software Engineer",
+        start_iso: "2026-09",
+        period: "Sept 2026 — Present",
         context: Some("Microsoft Fabric · Spark query engine"),
         minor: false,
         highlights: &[Highlight {
@@ -146,21 +146,30 @@ pub static EXPERIENCE: &[Role] = &[
     },
     Role {
         company: "Microsoft",
+        title: "Software Engineer II",
+        start_iso: "2024-09",
+        period: "Sept 2024 — Sept 2026",
+        context: Some("Azure HDInsight on AKS"),
+        minor: false,
+        highlights: &[Highlight {
+            headline: "In-place upgrades for a big data PaaS.",
+            body: "Big data clusters are notoriously hard to upgrade without downtime, and most \
+                   managed platforms simply don't try. I engineered in-place upgrades for \
+                   HDInsight on AKS so customers could absorb the latest open-source features \
+                   and fixes with minimal disruption to running workloads — a rare capability \
+                   in the market, and one that unblocked enterprise onboarding that had stalled \
+                   on exactly this requirement.",
+        }],
+        stack: &["Kubernetes", "Azure", "Go"],
+    },
+    Role {
+        company: "Microsoft",
         title: "Software Engineer I",
         start_iso: "2022-07",
         period: "July 2022 — Sept 2024",
         context: Some("Azure HDInsight on AKS"),
         minor: false,
         highlights: &[
-            Highlight {
-                headline: "In-place upgrades for a big data PaaS.",
-                body: "Big data clusters are notoriously hard to upgrade without downtime, and \
-                       most managed platforms simply don't try. I engineered in-place upgrades \
-                       for HDInsight on AKS so customers could absorb the latest open-source \
-                       features and fixes with minimal disruption to running workloads — a rare \
-                       capability in the market, and one that unblocked enterprise onboarding \
-                       that had stalled on exactly this requirement.",
-            },
             Highlight {
                 headline: "A custom Kubernetes scheduler for zone-resilient Kafka.",
                 body: "Kafka's durability guarantees mean very little if every broker lands in \
