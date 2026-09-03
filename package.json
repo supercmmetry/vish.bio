@@ -36,11 +36,13 @@
   "scripts": {
     "clean": "rimraf assets/app.generated.css",
     "fonts": "node scripts/build-fonts.mjs",
+    "resume": "typst compile --font-path node_modules/computer-modern/fonts resume/resume.typ assets/resume.pdf",
     "build": "NODE_ENV=production postcss styles/app.css -o assets/app.generated.css",
     "build:dev": "postcss styles/app.css -o assets/app.generated.css",
     "release": "yarn build && cargo build --release --locked",
     "dev": "yarn build:dev && cargo run",
     "start": "yarn release && ./target/release/vish-bio",
     "watch": "npm-watch"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
