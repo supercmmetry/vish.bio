@@ -112,6 +112,12 @@
   },
 )
 
+// A figure in dollars is the one thing in a bullet a reader stops on, so it carries the
+// weight. CMU Typewriter Text ships a 700 face, so this is a drawn bold rather than a
+// synthesised one. Colour stays the prose grey of the sentence around it — the weight is
+// cue enough, and a second change would make the figure shout.
+#let money(body) = text(weight: 700, body)
+
 // A `.link`: accent-coloured with the site's soft underline.
 #let url(href, label) = link(href, text(fill: accent, underline(
   offset: 1.5pt,
@@ -260,7 +266,7 @@
     competitive feature for any big data PaaS in the market. This capability enabled
     customers to seamlessly integrate the latest open-source features and fixes into their
     big data clusters with minimal workload disruption. As a result, many high-revenue
-    enterprise customers (\~2 million USD potential revenue) were unblocked during
+    enterprise customers (#money[\~2 million USD] potential revenue) were unblocked during
     onboarding, allowing them to receive critical updates in a managed and efficient manner.
 ]
 
@@ -296,8 +302,8 @@
     system crashed. Recognizing this as a critical solution, I presented compelling data
     from test regions to the leadership team, demonstrating its effectiveness. This
     initiative prevented significant customer refund losses during the outage and replaced
-    the outdated infrastructure, saving approximately 30,000 USD per region per month in
-    maintenance costs.
+    the outdated infrastructure, saving approximately #money[30,000 USD] per region per
+    month in maintenance costs.
 ]
 
 #entry("SmokeTrees", "May 2020 - July 2020", "Full-stack development intern")[
